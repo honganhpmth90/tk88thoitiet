@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     }
     public static boolean hasPermissions(Context context, String... permissions)
     {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && context != null && permissions != null)
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null)
         {
             for (String permission : permissions)
             {
