@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
@@ -69,9 +70,10 @@ public class DetailWeatherActivity extends AppCompatActivity {
         tvNhietDo = findViewById(R.id.tvNhietDo);
         tvTrangThai = findViewById(R.id.tvTrangThai);
     }
-    private void getCurrentWeatherData(final String city) {
+    private void getCurrentWeatherData(final String city, String datetime) {
         RequestQueue queue = Volley.newRequestQueue(DetailWeatherActivity.this);
-        String url = "http://api.openweathermap.org/data/2.5/find?lang=vi&q=" + city + "&units=metric&appid=05dab36db00d455448c0b83ceaeb67d7";
+        String url = "http://api.openweathermap.org/data/2.5/find?lang=vi&q=" + city
+                    + "&units=metric&appid=05dab36db00d455448c0b83ceaeb67d7";
         StringRequest request = new StringRequest(Request.Method.GET, url,new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -131,7 +133,17 @@ public class DetailWeatherActivity extends AppCompatActivity {
             @Override
             public void onDateChanged(DatePicker datePicker, int year, int month, int dayOfMonth) {
                 Log.d("Date", "Year=" + year + " Month=" + (month + 1) + " day=" + dayOfMonth);
+                DateTime dateTimeInUtc = new DateTime( "2011-07-19T18:23:20+0000", DateTimeZone.UTC );
+                long secondsSinceUnixEpoch = ( dateTimeInUtc.getMillis() / 1000 );
+
                 getCurrentWeatherData(tentp);
+            }
+        });
+
+        btnTiepTheo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
     }

@@ -8,6 +8,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -37,8 +39,9 @@ import static android.Manifest.permission.ACCESS_NETWORK_STATE;
 public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 200;
-    EditText edtTenThanhPho;
+    AutoCompleteTextView edtTenThanhPho;
     TextView tvTenTp, tvTenQg, tvNhietDo, tvDoAm, tvGio, tvMay, tvNgayThang, tvTrangThai;
+
     Button btnChon, btnTiepTheo;
     ImageView imgIcon;
     static final String DEFAUT_CITY = "Ho chi minh";
@@ -64,16 +67,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         int PERMISSION_ALL = 1;
-        String[] PERMISSIONS = {Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE};
+        String[] PERMISSIONS = {INTERNET, ACCESS_NETWORK_STATE};
         if (!hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         }
+        ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_REQUEST_CODE);
         init();
         getCurrentWeatherData(DEFAUT_CITY);
         clickButton();
 
     }
-
+    private static final String[] STUFF = new String[] { "Ha noi", "Ho chi minh","Hue", "Da Nang", "Da lat" };
     private void init() {
         edtTenThanhPho = findViewById(R.id.edtTenTp);
         tvTenTp = findViewById(R.id.tvThanhPho);
@@ -87,6 +91,21 @@ public class MainActivity extends AppCompatActivity {
         imgIcon = findViewById(R.id.imgThoiTiet);
         tvNhietDo = findViewById(R.id.tvNhietDo);
         tvTrangThai = findViewById(R.id.tvTrangThai);
+        edtTenThanhPho.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                edtTenThanhPho.showDropDown();
+            }
+        });
+
+        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                STUFF
+        );
+        edtTenThanhPho.setAdapter(adapter);
     }
 
     private void getCurrentWeatherData(final String city) {

@@ -12,12 +12,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/edtTenTp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Nhập tên thành phố..." />
+            android:text="Chọn thành phố " />
 
         <Button
             android:id="@+id/btnThanhPho"
@@ -102,6 +102,12 @@
             android:layout_gravity="center"
             android:text="Trạng thai"
             android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Button" />
     </LinearLayout>
 
     <LinearLayout
