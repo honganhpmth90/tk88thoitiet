@@ -27,7 +27,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class DetailWeatherActivity extends AppCompatActivity {
     private String tentp;
@@ -57,7 +61,10 @@ public class DetailWeatherActivity extends AppCompatActivity {
             String ThanhPho =(String) b.get("tentp");
             tentp = ThanhPho;
         }
-        getCurrentWeatherData(tentp);
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        Date date = new Date();
+        String strdate = dateFormat.format(date);
+        getCurrentWeatherData(tentp,strdate);
         clickCalendar();
     }
     private void init() {
@@ -125,6 +132,12 @@ public class DetailWeatherActivity extends AppCompatActivity {
         }
     }
 
+    public String convertDateoTEpoch(String str) throws ParseException {
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        Date date = df.parse(str);
+        long epoch = date.getTime();
+        return epoch + "";
+    }
     private void clickCalendar() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
@@ -132,14 +145,16 @@ public class DetailWeatherActivity extends AppCompatActivity {
 
             @Override
             public void onDateChanged(DatePicker datePicker, int year, int month, int dayOfMonth) {
-                Log.d("Date", "Year=" + year + " Month=" + (month + 1) + " day=" + dayOfMonth);
-                DateTime dateTimeInUtc = new DateTime( "2011-07-19T18:23:20+0000", DateTimeZone.UTC );
-                long secondsSinceUnixEpoch = ( dateTimeInUtc.getMillis() / 1000 );
-
-                getCurrentWeatherData(tentp);
+                String strdate = dayOfMonth +"/" + (month + 1) + "/"+ year + " 12:00";
+                String secondsSinceUnixEpoch = null;
+                try {
+                    secondsSinceUnixEpoch = convertDateoTEpoch(strdate);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                getCurrentWeatherData(tentp,secondsSinceUnixEpoch);
             }
         });
-
         btnTiepTheo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
