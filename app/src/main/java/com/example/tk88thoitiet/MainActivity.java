@@ -4,9 +4,13 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -14,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -62,6 +67,21 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
+    private boolean checkNetwork() {
+        boolean wifiAvailable = false;
+        boolean mobileAvailable = false;
+        ConnectivityManager conManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] networkInfo = conManager.getAllNetworkInfo();
+        for (NetworkInfo netInfo : networkInfo) {
+            if (netInfo.getTypeName().equalsIgnoreCase("WIFI"))
+                if (netInfo.isConnected())
+                    wifiAvailable = true;
+            if (netInfo.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (netInfo.isConnected())
+                    mobileAvailable = true;
+        }
+        return wifiAvailable || mobileAvailable;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,22 +128,36 @@ public class MainActivity extends AppCompatActivity {
         edtTenThanhPho.setAdapter(adapter);
     }
 
+    public void NoInternetToast(){
+        LayoutInflater inflater = getLayoutInflater();
+        View v = inflater.inflate(R.layout.no_internet_toast, null);
+        Toast toast = new Toast(getApplicationContext());
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        toast.setView(v);
+        toast.show();
+    }
     private void getCurrentWeatherData(final String city) {
-        RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
-        String url = "http://api.openweathermap.org/data/2.5/find?lang=vi&q=" + city + "&units=metric&appid=05dab36db00d455448c0b83ceaeb67d7";
-        StringRequest request = new StringRequest(Request.Method.GET, url,new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                processResponse(response);
+        if (checkNetwork()){
+            RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
+            String url = "http://api.openweathermap.org/data/2.5/find?lang=vi&q=" + city + "&units=metric&appid=05dab36db00d455448c0b83ceaeb67d7";
+            StringRequest request = new StringRequest(Request.Method.GET, url,new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    processResponse(response);
+                }
+            },new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d("Loi", error.toString());
+                }
             }
-        },new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("Loi", error.toString());
-            }
+            );
+            queue.add(request);
+        }else {
+            NoInternetToast();
         }
-        );
-        queue.add(request);
+
     }
     private void processResponse(String response) {
         try {
